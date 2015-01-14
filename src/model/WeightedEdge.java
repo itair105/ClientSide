@@ -15,4 +15,22 @@ public final class WeightedEdge extends AbstractEdge implements Serializable {
     public String toString() {
         return "Edge id: " + id + " n1: " + n1.getId() + " n2: " + n2.getId() + " weight: " + weight;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        WeightedEdge that = (WeightedEdge) o;
+
+        if (Double.compare(that.weight, weight) != 0) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

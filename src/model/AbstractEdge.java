@@ -37,4 +37,20 @@ public class AbstractEdge implements Serializable {
     public static String computeDefaultEdgeId( Node n1, Node n2 ) {
         return n1.getId() +"<->" + n2.getId();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractEdge that = (AbstractEdge) o;
+
+        return (n1.getId().equals(that.n1.getId()) && n2.getId().equals( that.n2.getId()) ||
+                (n1.getId().equals(that.n2.getId()) && n2.getId().equals( that.n1.getId())));
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 }

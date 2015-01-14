@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="org.eclipse.swt.win32.win32.x86_64_3.103.0.v20140605-2012">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/org.eclipse.swt.win32.win32.x86_64_3.103.0.v20140605-2012.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <NATIVE>
+      <root url="jar://$PROJECT_DIR$/lib/org.eclipse.swt.win32.win32.x86_64_3.103.0.v20140605-2012.jar!/" />
+    </NATIVE>
+    <SOURCES />
+  </library>
+</component>

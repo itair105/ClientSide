@@ -7,6 +7,7 @@ import model.Model;
 import model.ServerCallingModel;
 import model.WeightGraphDomain;
 import view.MyConsoleView;
+import view.SelectDomainWindow;
 import view.View;
 
 import java.io.*;
@@ -82,7 +83,7 @@ public class Presenter implements Observer {
     }
 
     public static void main( String [] args ) {
-        View view = new MyConsoleView();
+        View view = new SelectDomainWindow(600,600,"Select Domain");
         Model model = new ServerCallingModel();
 
         Presenter presenter = new Presenter(view, model);
