@@ -17,4 +17,8 @@ public interface Model extends Observable {
     GraphDomain getDomain();
 
     Solution getSolution();
+
+    void setIp(String ip);
+
+    void setPort(int port);
 }

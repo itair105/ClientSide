@@ -10,24 +10,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ServerCallingModel implements Model {
-    static int i = 0;
-    Set<Observer> listeners = new HashSet<Observer>();
-    String host = "127.0.0.1";
-    int port = 5555;
 
-    public ServerCallingModel() {
-        /*try {
-            *//*Socket socket = createSocket(host, port);
-            BufferedWriter out = createWriter(socket);
-            *//**//*ObjectInputStream in = createReader(socket);*//**//*
-            out.write("Writing message " + i);
-            out.close();*//*
-            System.err.println("Connected to " + host + " on port " + port);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
+    public ServerCallingModel(String host, int port) {
+        this.host = host;
+        this.port = port;
     }
+
+    Set<Observer> listeners = new HashSet<Observer>();
+    String host;
+    int port;
+
 
     private Socket createSocket(String host, int port) throws IOException {
         return new Socket(host, port);
@@ -158,6 +150,16 @@ public class ServerCallingModel implements Model {
         }
 
         return null;
+    }
+
+    @Override
+    public void setIp(String ip) {
+        this.host = ip;
+    }
+
+    @Override
+    public void setPort(int port) {
+        this.port = port;
     }
 
 

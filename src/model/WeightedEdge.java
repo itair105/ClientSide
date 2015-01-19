@@ -22,15 +22,15 @@ public final class WeightedEdge extends AbstractEdge implements Serializable {
             return false;
         }
 
-        WeightedEdge that = (WeightedEdge) o;
-
-        if (Double.compare(that.weight, weight) != 0) return false;
-
         return true;
     }
 
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    public double getWeight() {
+        return weight;
     }
 }

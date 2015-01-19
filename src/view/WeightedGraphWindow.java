@@ -6,21 +6,18 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Label;
 
-import java.awt.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
-public class WeightlessGraphWindow extends UIView {
+public class WeightedGraphWindow extends UIView {
 
 	public static final String BFS = "BFS";
 	public static final String DIKJSTRA = "Dikjstra";
@@ -29,9 +26,15 @@ public class WeightlessGraphWindow extends UIView {
 	final Map<Node, Point> nodeToPoint = new HashMap<Node, Point>();
 	private Set<AbstractEdge> solutionEdges = null;
 
-	public WeightlessGraphWindow(SelectDomainWindow selectDomainWindow, Display display, int width, int height, String title) {
+	public WeightedGraphWindow(SelectDomainWindow selectDomainWindow, Display display, int width, int height, String title) {
 		super(selectDomainWindow, display, width, height, title);
 
+	}
+
+	public void clearSolutions() {
+		if (solutionEdges != null) {
+			solutionEdges.clear();
+		}
 	}
 	
 	@Override
@@ -44,12 +47,26 @@ public class WeightlessGraphWindow extends UIView {
 		
 		final Combo combo = new Combo(shell, SWT.READ_ONLY);
 		combo.setLayoutData(new RowData(150, 20));
-	    String items[] = {BFS};
+	    String items[] = {BFS, DIKJSTRA};
 	    combo.setItems(items);
-		combo.select(0);
-		combo.setEnabled(false);
-		selectDomainWindow.setUserAction("algorithm=bfs");
-		selectDomainWindow.notifyObservers();
+		combo.addSelectionListener(new SelectionListener() {
+			@Override
+			public void widgetSelected(SelectionEvent selectionEvent) {
+				if (combo.getText().equals(BFS)) {
+					selectDomainWindow.setUserAction("algorithm=bfs");
+				} else if (combo.getText().equals(DIKJSTRA)) {
+					selectDomainWindow.setUserAction("algorithm=dijkstra");
+				}
+
+				selectDomainWindow.notifyObservers();
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent selectionEvent) {
+
+			}
+		});
+
 
 		Button startButton = new Button(shell, SWT.PUSH);
 		startButton.setText("Start");
@@ -88,11 +105,10 @@ public class WeightlessGraphWindow extends UIView {
 					continue;
 				}
 
-				solutionEdges.add(new WeightLessEdge(prevNode, node));
+				solutionEdges.add(new WeightedEdge(prevNode, node, 1));
 				prevNode = node;
 			}
 		}
-
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -101,16 +117,8 @@ public class WeightlessGraphWindow extends UIView {
 		});
 	}
 
-	public void clearSolutions() {
-		if (solutionEdges != null) {
-			solutionEdges.clear();
-		}
-	}
-
-
 	@Override
 	public void displayDomain(final GraphDomain domain) {
-
 		Display.getDefault().asyncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -121,7 +129,6 @@ public class WeightlessGraphWindow extends UIView {
 						}
 						// Do some drawing
 						GC gc = e.gc;
-						Image image = new Image(e.display,"node.png");
 
 						int nodeWidth = 30;
 						int nodeHeight = 30;
@@ -147,18 +154,14 @@ public class WeightlessGraphWindow extends UIView {
 							y = 200 + (int)(length * Math.sin(angle));
 							nodeToPoint.put(node, new Point(x, y));
 
-							if (domain.getTargetNode().equals(node) || domain.getStartNode().equals(node)) {
-								gc.drawOval(x, y, nodeWidth, nodeHeight);
-							} else {
-								gc.drawImage(image, x, y);
-							}
-
+							gc.drawOval(x, y, nodeWidth, nodeHeight);
 							gc.drawText(nodeName.substring(4), x + 12, y + 4);
 							angle += angleStepSize;
 						}
 
 
 						for (AbstractEdge edge : domain.getEdgeMap().values()) {
+							WeightedEdge weightedEdge = (WeightedEdge)edge;
 							if (solutionEdges == null || solutionEdges.contains(edge)) {
 								gc.setForeground(e.display.getSystemColor(SWT.COLOR_BLUE));
 							} else {
@@ -167,7 +170,13 @@ public class WeightlessGraphWindow extends UIView {
 
 							Point n1Point = nodeToPoint.get(edge.getN1());
 							Point n2Point = nodeToPoint.get(edge.getN2());
-							gc.drawLine(n1Point.x + 10, n1Point.y + 10, n2Point.x + 10, n2Point.y + 10);
+							if (!n1Point.equals(n2Point)) {
+								gc.drawLine(n1Point.x + 10, n1Point.y + 10, n2Point.x + 10, n2Point.y + 10);
+								Point middlePoint = new Point((n1Point.x + n2Point.x) / 2 - 2, (n2Point.y + n1Point.y) / 2 - 5);
+								gc.drawText(String.valueOf(weightedEdge.getWeight()), middlePoint.x, middlePoint.y);
+							}
+
+
 						}
 
 					}
